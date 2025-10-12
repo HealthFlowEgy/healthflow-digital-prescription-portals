@@ -1,0 +1,43 @@
+{
+  "name": "healthflow-digital-prescription-portals",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HealthFlow Digital Prescription Portals - Regulatory, Admin & BI Portals",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:HealthFlowEgy/healthflow-digital-prescription-portals.git"
+  },
+  "workspaces": [
+    "portals/*",
+    "backend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky install",
+    "migrate": "cd backend && npm run migrate",
+    "deploy:staging": "echo 'Deploying to staging...'",
+    "deploy:production": "echo 'Deploying to production...'"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
+    "turbo": "^1.11.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

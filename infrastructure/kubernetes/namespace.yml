@@ -1,0 +1,11 @@
+# File: infrastructure/kubernetes/namespace.yaml
+# Purpose: Create namespace for portals
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: healthflow-portals
+  labels:
+    name: healthflow-portals
+    environment: production
+    team: digital-prescription

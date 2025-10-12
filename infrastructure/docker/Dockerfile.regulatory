@@ -1,0 +1,67 @@
+# File: infrastructure/docker/Dockerfile.regulatory
+# Purpose: Multi-stage Docker build for Regulatory Portal (React + Vite)
+
+# Stage 1: Build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY turbo.json ./
+COPY portals/regulatory/package*.json ./portals/regulatory/
+COPY packages/*/package*.json ./packages/
+
+# Install dependencies
+RUN npm ci --include=dev
+
+# Copy source code
+COPY portals/regulatory ./portals/regulatory
+COPY packages ./packages
+
+# Build arguments
+ARG VITE_API_URL
+ARG VITE_ENVIRONMENT
+
+# Build portal
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_ENVIRONMENT=$VITE_ENVIRONMENT
+RUN npm run build -- portals/regulatory
+
+# Stage 2: Production (Nginx)
+FROM nginx:1.25-alpine AS production
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy custom nginx config
+COPY infrastructure/docker/nginx/regulatory.conf /etc/nginx/conf.d/default.conf
+
+# Copy built files
+COPY --from=builder /app/portals/regulatory/dist /usr/share/nginx/html
+
+# Copy nginx security headers
+COPY infrastructure/docker/nginx/security-headers.conf /etc/nginx/conf.d/security-headers.conf
+
+# Create non-root user
+RUN addgroup -g 101 -S nginx && adduser -S nginx -u 101 -G nginx
+
+# Set permissions
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:80/health || exit 1
+
+# Switch to non-root user
+USER nginx
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

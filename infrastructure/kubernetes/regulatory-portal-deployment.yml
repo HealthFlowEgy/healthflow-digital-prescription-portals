@@ -1,0 +1,88 @@
+# File: infrastructure/kubernetes/regulatory-portal-deployment.yaml
+# Purpose: Regulatory Portal deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: regulatory-portal
+  namespace: healthflow-portals
+  labels:
+    app: regulatory-portal
+    version: v1
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: regulatory-portal
+  template:
+    metadata:
+      labels:
+        app: regulatory-portal
+        version: v1
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+      
+      containers:
+      - name: regulatory-portal
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/healthflow-portals-regulatory:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+      
+      terminationGracePeriodSeconds: 15
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: regulatory-portal
+  namespace: healthflow-portals
+  labels:
+    app: regulatory-portal
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: regulatory-portal

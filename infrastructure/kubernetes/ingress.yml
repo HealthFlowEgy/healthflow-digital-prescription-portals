@@ -1,0 +1,74 @@
+# File: infrastructure/kubernetes/ingress.yaml
+# Purpose: Ingress configuration with TLS
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: portals-ingress
+  namespace: healthflow-portals
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/limit-rps: "20"
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+spec:
+  tls:
+  - hosts:
+    - portals.healthflow.ai
+    - portals-api.healthflow.ai
+    secretName: portals-tls-cert
+  
+  rules:
+  # API Backend
+  - host: portals-api.healthflow.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-api
+            port:
+              number: 80
+  
+  # Regulatory Portal
+  - host: portals.healthflow.ai
+    http:
+      paths:
+      - path: /regulatory
+        pathType: Prefix
+        backend:
+          service:
+            name: regulatory-portal
+            port:
+              number: 80
+      
+      # Super Admin Portal (Sprint 5)
+      - path: /admin
+        pathType: Prefix
+        backend:
+          service:
+            name: super-admin-portal
+            port:
+              number: 80
+      
+      # BI Portal (Sprint 9)
+      - path: /analytics
+        pathType: Prefix
+        backend:
+          service:
+            name: bi-portal
+            port:
+              number: 80

@@ -1,0 +1,19 @@
+# File: infrastructure/kubernetes/configmap.yaml
+# Purpose: Non-sensitive configuration
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portals-config
+  namespace: healthflow-portals
+data:
+  NODE_ENV: "production"
+  PORT: "4000"
+  API_URL: "https://portals-api.healthflow.ai"
+  CORE_API_URL: "https://api.healthflow.ai/v1"
+  ELASTICSEARCH_URL: "http://elasticsearch:9200"
+  RATE_LIMIT_WINDOW_MS: "60000"
+  RATE_LIMIT_MAX_REQUESTS: "100"
+  ENABLE_RECALL_SYSTEM: "true"
+  ENABLE_ADVERSE_EVENTS: "true"
+  ENABLE_ANALYTICS: "true"
