@@ -1,0 +1,67 @@
+# HealthFlow Digital Prescription Portals - Code Owners
+# 
+# This file defines individuals or teams responsible for code in this repository.
+# Code owners are automatically requested for review when someone opens a pull request
+# that modifies code that they own.
+#
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+# These owners will be requested for review unless a later match takes precedence
+* @HealthFlowEgy/devops-team
+
+# Infrastructure and DevOps
+/infrastructure/ @HealthFlowEgy/devops-team @HealthFlowEgy/platform-team
+/infrastructure/terraform/ @HealthFlowEgy/devops-team @HealthFlowEgy/security-team
+/infrastructure/docker/ @HealthFlowEgy/devops-team
+/infrastructure/kubernetes/ @HealthFlowEgy/devops-team @HealthFlowEgy/platform-team
+
+# CI/CD Workflows
+/.github/workflows/ @HealthFlowEgy/devops-team
+/.github/workflows/deploy-production.yml @HealthFlowEgy/devops-team @HealthFlowEgy/security-team
+
+# Backend Services
+/backend/ @HealthFlowEgy/backend-team
+/backend/services/eda/ @HealthFlowEgy/backend-team @HealthFlowEgy/regulatory-team
+/backend/services/admin/ @HealthFlowEgy/backend-team @HealthFlowEgy/admin-team
+/backend/services/analytics/ @HealthFlowEgy/backend-team @HealthFlowEgy/analytics-team
+
+# Database and Migrations (requires special approval)
+/backend/shared/database/ @HealthFlowEgy/database-team @HealthFlowEgy/backend-team
+/backend/shared/database/migrations/ @HealthFlowEgy/database-team @HealthFlowEgy/devops-team
+
+# Frontend Portals
+/portals/ @HealthFlowEgy/frontend-team
+/portals/regulatory/ @HealthFlowEgy/frontend-team @HealthFlowEgy/regulatory-team
+/portals/super-admin/ @HealthFlowEgy/frontend-team @HealthFlowEgy/admin-team
+/portals/business-intelligence/ @HealthFlowEgy/frontend-team @HealthFlowEgy/analytics-team
+
+# Shared Packages
+/packages/ @HealthFlowEgy/frontend-team @HealthFlowEgy/backend-team
+/packages/ui-components/ @HealthFlowEgy/frontend-team
+/packages/auth/ @HealthFlowEgy/backend-team @HealthFlowEgy/security-team
+/packages/api-client/ @HealthFlowEgy/backend-team @HealthFlowEgy/frontend-team
+
+# Testing
+/tests/ @HealthFlowEgy/qa-team
+/tests/e2e/ @HealthFlowEgy/qa-team @HealthFlowEgy/frontend-team
+/tests/integration/ @HealthFlowEgy/qa-team @HealthFlowEgy/backend-team
+/tests/unit/ @HealthFlowEgy/qa-team
+
+# Documentation
+/docs/ @HealthFlowEgy/tech-writers @HealthFlowEgy/devops-team
+/docs/api/ @HealthFlowEgy/backend-team @HealthFlowEgy/tech-writers
+/docs/architecture/ @HealthFlowEgy/platform-team @HealthFlowEgy/tech-writers
+/docs/deployment/ @HealthFlowEgy/devops-team @HealthFlowEgy/tech-writers
+/docs/runbooks/ @HealthFlowEgy/devops-team @HealthFlowEgy/sre-team
+
+# Configuration Files
+/package.json @HealthFlowEgy/devops-team @HealthFlowEgy/frontend-team
+/turbo.json @HealthFlowEgy/devops-team
+/tsconfig.json @HealthFlowEgy/frontend-team @HealthFlowEgy/backend-team
+/docker-compose.yml @HealthFlowEgy/devops-team
+/.env.example @HealthFlowEgy/devops-team @HealthFlowEgy/security-team
+
+# Security-sensitive files
+/.github/CODEOWNERS @HealthFlowEgy/devops-team @HealthFlowEgy/security-team
+
