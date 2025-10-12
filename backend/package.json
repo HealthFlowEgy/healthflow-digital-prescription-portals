@@ -10,12 +10,18 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:integration": "jest --testMatch='**/*.integration.test.ts'",
+    "test:e2e": "jest --testMatch='**/*.e2e.test.ts'",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
+    "migrate": "knex migrate:latest --knexfile src/shared/database/knexfile.ts",
     "migrate:up": "knex migrate:latest --knexfile src/shared/database/knexfile.ts",
     "migrate:down": "knex migrate:rollback --knexfile src/shared/database/knexfile.ts",
     "migrate:make": "knex migrate:make --knexfile src/shared/database/knexfile.ts",
-    "seed": "knex seed:run --knexfile src/shared/database/knexfile.ts"
+    "migrate:status": "knex migrate:status --knexfile src/shared/database/knexfile.ts",
+    "migrate:list": "knex migrate:list --knexfile src/shared/database/knexfile.ts",
+    "seed": "knex seed:run --knexfile src/shared/database/knexfile.ts",
+    "seed:make": "knex seed:make --knexfile src/shared/database/knexfile.ts"
   },
   "keywords": [
     "healthflow",
@@ -31,16 +37,21 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "express-rate-limit": "^6.10.0",
     "helmet": "^7.0.0",
     "ioredis": "^5.3.2",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "knex": "^2.5.1",
+    "node-cron": "^4.2.1",
     "papaparse": "^5.4.1",
+    "pdfkit": "^0.17.2",
     "pg": "^8.11.3",
     "winston": "^3.10.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "xmlbuilder2": "^3.1.1"
   },
   "devDependencies": {
     "@types/compression": "^1.7.3",
@@ -63,4 +74,3 @@
     "typescript": "^5.2.2"
   }
 }
-

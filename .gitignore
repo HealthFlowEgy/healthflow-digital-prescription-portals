@@ -74,3 +74,9 @@ secrets/
 *.key
 *.crt
 
+
+# Storage directories (exclude files but keep directories)
+storage/reports/*
+storage/exports/*
+!storage/reports/.gitkeep
+!storage/exports/.gitkeep
