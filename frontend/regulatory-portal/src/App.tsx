@@ -4,9 +4,11 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box, AppBar, Toolbar, Typography, Container, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
-import { Assignment as AssignmentIcon, LocalPharmacy as PharmacyIcon } from '@mui/icons-material';
+import { Assignment as AssignmentIcon, LocalPharmacy as PharmacyIcon, Warning as WarningIcon, Report as ReportIcon } from '@mui/icons-material';
 import { AuditLogViewer } from './components/audit/AuditLogViewer';
 import { MedicineDirectory } from './components/medicine/MedicineDirectory';
+import { RecallManagement } from './components/recall/RecallManagement';
+import { AdverseEventReporting } from './components/adverseEvent/AdverseEventReporting';
 
 // HealthFlow theme colors
 const theme = createTheme({
@@ -65,6 +67,22 @@ function App() {
                     <ListItemText primary="Audit Logs" />
                   </ListItemButton>
                 </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/recalls">
+                    <ListItemIcon>
+                      <WarningIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Recall Management" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component="a" href="/adverse-events">
+                    <ListItemIcon>
+                      <ReportIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Adverse Events" />
+                  </ListItemButton>
+                </ListItem>
               </List>
             </Box>
           </Drawer>
@@ -77,6 +95,8 @@ function App() {
                 <Route path="/" element={<Navigate to="/medicines" replace />} />
                 <Route path="/medicines" element={<MedicineDirectory />} />
                 <Route path="/audit-logs" element={<AuditLogViewer />} />
+                <Route path="/recalls" element={<RecallManagement />} />
+                <Route path="/adverse-events" element={<AdverseEventReporting />} />
               </Routes>
             </Container>
           </Box>
