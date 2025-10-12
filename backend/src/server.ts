@@ -16,6 +16,7 @@ import { authMiddleware } from './shared/middleware/auth';
 import healthRoutes from './shared/routes/health';
 import edaRoutes from './services/eda/routes';
 import tenantRoutes from './services/tenants/routes';
+import analyticsRoutes from './services/analytics/routes';
 
 const app: Application = express();
 
@@ -70,6 +71,7 @@ app.use('/health', healthRoutes);
 // API routes (with authentication)
 app.use('/api/v2/eda', authMiddleware, edaRoutes);
 app.use('/api/v2', authMiddleware, tenantRoutes);
+app.use('/api/v2/analytics', authMiddleware, analyticsRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

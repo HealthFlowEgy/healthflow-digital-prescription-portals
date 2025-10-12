@@ -10,29 +10,22 @@ import RecallManagement from './components/recall/RecallManagement';
 import AdverseEventReporting from './components/adverseEvent/AdverseEventReporting';
 import TenantManagement from './components/tenant/TenantManagement';
 import UserManagement from './components/user/UserManagement';
+
+// Sprint 4 Components
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import ReportBuilder from './pages/ReportBuilder';
+import DataExportManager from './pages/DataExportManager';
+
 import NotFoundPage from './pages/NotFoundPage';
 
-// Create Material-UI theme
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    success: {
-      main: '#2e7d32',
-    },
-    warning: {
-      main: '#ed6c02',
-    },
-    error: {
-      main: '#d32f2f',
-    },
-    info: {
-      main: '#0288d1',
-    },
+    primary: { main: '#1976d2' },
+    secondary: { main: '#dc004e' },
+    success: { main: '#2e7d32' },
+    warning: { main: '#ed6c02' },
+    error: { main: '#d32f2f' },
+    info: { main: '#0288d1' },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -67,14 +60,23 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            
+            {/* Sprint 1 */}
             <Route path="audit-logs" element={<AuditLogViewer />} />
             <Route path="medicines" element={<MedicineDirectory />} />
+            
+            {/* Sprint 2 */}
             <Route path="recalls" element={<RecallManagement />} />
             <Route path="adverse-events" element={<AdverseEventReporting />} />
             
-            {/* Sprint 3 Routes */}
+            {/* Sprint 3 */}
             <Route path="tenants" element={<TenantManagement />} />
             <Route path="users" element={<UserManagement />} />
+            
+            {/* Sprint 4 - NEW */}
+            <Route path="analytics" element={<AnalyticsDashboard />} />
+            <Route path="reports" element={<ReportBuilder />} />
+            <Route path="exports" element={<DataExportManager />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

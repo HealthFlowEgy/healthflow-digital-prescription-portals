@@ -26,6 +26,9 @@ import {
   Report as AdverseEventIcon,
   Business as TenantIcon,
   People as UserIcon,
+  Assessment as AnalyticsIcon,
+  Description as ReportIcon,
+  GetApp as ExportIcon,
   AccountCircle,
   Logout,
   Settings,
@@ -45,6 +48,12 @@ const navigationItems: NavigationItem[] = [
     label: 'Dashboard',
     path: '/dashboard',
     icon: <DashboardIcon />,
+  },
+  {
+    label: 'Analytics',
+    path: '/analytics',
+    icon: <AnalyticsIcon />,
+    roles: ['super_admin', 'eda_officer', 'tenant_admin'],
   },
   {
     label: 'Audit Logs',
@@ -81,6 +90,18 @@ const navigationItems: NavigationItem[] = [
     icon: <UserIcon />,
     roles: ['super_admin', 'tenant_admin'],
   },
+  {
+    label: 'Reports',
+    path: '/reports',
+    icon: <ReportIcon />,
+    roles: ['super_admin', 'eda_officer', 'tenant_admin'],
+  },
+  {
+    label: 'Data Exports',
+    path: '/exports',
+    icon: <ExportIcon />,
+    roles: ['super_admin', 'eda_officer', 'tenant_admin'],
+  },
 ];
 
 const Layout: React.FC = () => {
@@ -89,7 +110,6 @@ const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  // Get user from localStorage (you may want to use Context/Redux)
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userRole = user.role || 'viewer';
 
@@ -116,7 +136,6 @@ const Layout: React.FC = () => {
     navigate('/login');
   };
 
-  // Filter navigation items based on user role
   const filteredNavItems = navigationItems.filter((item) => {
     if (!item.roles) return true;
     return item.roles.includes(userRole);
@@ -179,7 +198,6 @@ const Layout: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {/* App Bar */}
       <AppBar
         position="fixed"
         sx={{
@@ -203,7 +221,6 @@ const Layout: React.FC = () => {
 
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* User Menu */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
               {user.name || 'User'}
@@ -244,18 +261,16 @@ const Layout: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Drawer */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
       >
-        {/* Mobile drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better mobile performance
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
@@ -268,7 +283,6 @@ const Layout: React.FC = () => {
           {drawer}
         </Drawer>
 
-        {/* Desktop drawer */}
         <Drawer
           variant="permanent"
           sx={{
@@ -284,7 +298,6 @@ const Layout: React.FC = () => {
         </Drawer>
       </Box>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
