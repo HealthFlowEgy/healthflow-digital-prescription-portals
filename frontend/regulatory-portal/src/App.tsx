@@ -1,110 +1,87 @@
-// File: frontend/regulatory-portal/src/App.tsx
-// Purpose: Main application component with routing
-
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, Box, AppBar, Toolbar, Typography, Container, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton } from '@mui/material';
-import { Assignment as AssignmentIcon, LocalPharmacy as PharmacyIcon, Warning as WarningIcon, Report as ReportIcon } from '@mui/icons-material';
-import { AuditLogViewer } from './components/audit/AuditLogViewer';
-import { MedicineDirectory } from './components/medicine/MedicineDirectory';
-import { RecallManagement } from './components/recall/RecallManagement';
-import { AdverseEventReporting } from './components/adverseEvent/AdverseEventReporting';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material';
+import Layout from './components/Layout';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import AuditLogViewer from './components/audit/AuditLogViewer';
+import MedicineDirectory from './components/medicine/MedicineDirectory';
+import RecallManagement from './components/recall/RecallManagement';
+import AdverseEventReporting from './components/adverseEvent/AdverseEventReporting';
+import TenantManagement from './components/tenant/TenantManagement';
+import UserManagement from './components/user/UserManagement';
+import NotFoundPage from './pages/NotFoundPage';
 
-// HealthFlow theme colors
+// Create Material-UI theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Blue
+      main: '#1976d2',
     },
     secondary: {
-      main: '#2e7d32', // Green
+      main: '#dc004e',
+    },
+    success: {
+      main: '#2e7d32',
+    },
+    warning: {
+      main: '#ed6c02',
+    },
+    error: {
+      main: '#d32f2f',
+    },
+    info: {
+      main: '#0288d1',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: 8,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        },
+      },
     },
   },
 });
 
-const drawerWidth = 240;
-
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
-        <Box sx={{ display: 'flex' }}>
-          {/* App Bar */}
-          <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            <Toolbar>
-              <Typography variant="h6" noWrap component="div">
-                HealthFlow - EDA Regulatory Portal
-              </Typography>
-            </Toolbar>
-          </AppBar>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="audit-logs" element={<AuditLogViewer />} />
+            <Route path="medicines" element={<MedicineDirectory />} />
+            <Route path="recalls" element={<RecallManagement />} />
+            <Route path="adverse-events" element={<AdverseEventReporting />} />
+            
+            {/* Sprint 3 Routes */}
+            <Route path="tenants" element={<TenantManagement />} />
+            <Route path="users" element={<UserManagement />} />
+          </Route>
 
-          {/* Sidebar */}
-          <Drawer
-            variant="permanent"
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-            }}
-          >
-            <Toolbar />
-            <Box sx={{ overflow: 'auto' }}>
-              <List>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/medicines">
-                    <ListItemIcon>
-                      <PharmacyIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Medicine Directory" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/audit-logs">
-                    <ListItemIcon>
-                      <AssignmentIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Audit Logs" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/recalls">
-                    <ListItemIcon>
-                      <WarningIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Recall Management" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton component="a" href="/adverse-events">
-                    <ListItemIcon>
-                      <ReportIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Adverse Events" />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Box>
-          </Drawer>
-
-          {/* Main Content */}
-          <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-            <Toolbar />
-            <Container maxWidth="xl">
-              <Routes>
-                <Route path="/" element={<Navigate to="/medicines" replace />} />
-                <Route path="/medicines" element={<MedicineDirectory />} />
-                <Route path="/audit-logs" element={<AuditLogViewer />} />
-                <Route path="/recalls" element={<RecallManagement />} />
-                <Route path="/adverse-events" element={<AdverseEventReporting />} />
-              </Routes>
-            </Container>
-          </Box>
-        </Box>
-      </BrowserRouter>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }
 
 export default App;
-
