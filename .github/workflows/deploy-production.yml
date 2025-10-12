@@ -1,0 +1,181 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v1.0.0)'
+        required: true
+
+jobs:
+  deploy-production:
+    name: Deploy to Production Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: production
+      url: https://portals.healthflow.ai
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security audit
+        run: npm audit --production --audit-level=high
+
+      - name: Build all workspaces
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: https://portals-api.healthflow.ai
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          NODE_ENV: test
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker images
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: healthflow-portals
+          IMAGE_TAG: ${{ github.event.inputs.version || github.ref_name }}
+        run: |
+          # Build and push backend
+          docker build -f infrastructure/docker/Dockerfile.backend \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY-backend:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY-backend:production-latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY-backend:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY-backend:production-latest
+
+          # Build and push all portals
+          for portal in regulatory super-admin business-intelligence; do
+            docker build -f infrastructure/docker/Dockerfile.$portal \
+              -t $ECR_REGISTRY/$ECR_REPOSITORY-$portal:$IMAGE_TAG \
+              -t $ECR_REGISTRY/$ECR_REPOSITORY-$portal:production-latest \
+              .
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY-$portal:$IMAGE_TAG
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY-$portal:production-latest
+          done
+
+      - name: Create database backup
+        run: |
+          aws rds create-db-snapshot \
+            --db-instance-identifier healthflow-production \
+            --db-snapshot-identifier pre-deploy-$(date +%Y%m%d-%H%M%S)
+
+      - name: Run database migrations
+        run: npm run migrate
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: Deploy to ECS (Blue/Green)
+        run: |
+          # Deploy backend
+          aws ecs update-service \
+            --cluster healthflow-portals-production \
+            --service backend \
+            --force-new-deployment \
+            --deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true},maximumPercent=200,minimumHealthyPercent=100"
+
+          # Deploy portals
+          for service in regulatory-portal super-admin-portal bi-portal; do
+            aws ecs update-service \
+              --cluster healthflow-portals-production \
+              --service $service \
+              --force-new-deployment \
+              --deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true},maximumPercent=200,minimumHealthyPercent=100"
+          done
+
+      - name: Wait for deployment
+        run: |
+          aws ecs wait services-stable \
+            --cluster healthflow-portals-production \
+            --services backend regulatory-portal super-admin-portal bi-portal
+        timeout-minutes: 20
+
+      - name: Run smoke tests
+        run: npm run test:smoke
+        env:
+          API_URL: https://portals-api.healthflow.ai
+
+      - name: Run E2E tests (critical paths)
+        run: npm run test:e2e:critical
+        env:
+          BASE_URL: https://portals.healthflow.ai
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          release_name: Release ${{ github.event.inputs.version || github.ref_name }}
+          body: |
+            ## Changes in this Release
+            - Regulatory Portal updates
+            - Super Admin Portal enhancements
+            - BI Portal improvements
+            
+            See [CHANGELOG.md](./CHANGELOG.md) for details.
+          draft: false
+          prerelease: false
+
+      - name: Notify deployment success
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: |
+            🎉 Production deployment successful!
+            Version: ${{ github.event.inputs.version || github.ref_name }}
+            URL: https://portals.healthflow.ai
+          fields: repo,message,commit,author
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: success()
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, initiating rollback..."
+          aws ecs update-service \
+            --cluster healthflow-portals-production \
+            --service backend \
+            --force-new-deployment \
+            --task-definition backend:PREVIOUS
+
+      - name: Notify deployment failure
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: |
+            ❌ Production deployment FAILED and rolled back!
+            Version: ${{ github.event.inputs.version || github.ref_name }}
+          fields: repo,message,commit,author
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: failure()
+
