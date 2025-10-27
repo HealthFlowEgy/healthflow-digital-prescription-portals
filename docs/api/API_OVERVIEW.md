@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** October 12, 2025  
-**Author:** Manus AI
+**Author:** HealthFlow team
 
 ## 1. Introduction
 

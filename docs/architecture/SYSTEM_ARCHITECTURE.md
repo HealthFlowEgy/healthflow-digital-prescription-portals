@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** October 12, 2025  
-**Author:** Manus AI
+**Author:** HealthFlow team
 
 ## 1. Executive Summary
 
@@ -331,5 +331,5 @@ The HealthFlow Digital Prescription Portals system architecture provides a solid
 
 | Version | Date           | Author    | Changes                          |
 | ------- | -------------- | --------- | -------------------------------- |
-| 1.0.0   | Oct 12, 2025   | Manus AI  | Initial architecture document    |
+| 1.0.0   | Oct 12, 2025   | HealthFlow team  | Initial architecture document    |
 

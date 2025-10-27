@@ -354,7 +354,7 @@ All secrets configured with PLACEHOLDER values:
 
 ### Sprint 0 Completion
 
-**Completed By:** Manus AI  
+**Completed By:** HealthFlow team  
 **Completion Date:** October 12, 2025  
 **Overall Status:** ✅ 82% Complete (Infrastructure code and documentation ready, AWS provisioning pending)
 

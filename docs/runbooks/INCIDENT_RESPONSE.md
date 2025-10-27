@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** October 12, 2025  
-**Author:** Manus AI
+**Author:** HealthFlow team
 
 ## 1. Purpose
 
@@ -588,5 +588,5 @@ openssl s_client -connect api.healthflow.gov.eg:443 -servername api.healthflow.g
 
 | Version | Date         | Author    | Changes                               |
 | ------- | ------------ | --------- | ------------------------------------- |
-| 1.0.0   | Oct 12, 2025 | Manus AI  | Initial incident response runbook     |
+| 1.0.0   | Oct 12, 2025 | HealthFlow team  | Initial incident response runbook     |
 

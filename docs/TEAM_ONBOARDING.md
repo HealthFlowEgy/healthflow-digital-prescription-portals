@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** October 12, 2025  
-**Author:** Manus AI
+**Author:** HealthFlow team
 
 ## Welcome to the HealthFlow Team!
 
@@ -632,5 +632,5 @@ Share your feedback with the Tech Lead or in the #digital-prescription-portals c
 
 | Version | Date         | Author    | Changes                          |
 | ------- | ------------ | --------- | -------------------------------- |
-| 1.0.0   | Oct 12, 2025 | Manus AI  | Initial team onboarding guide    |
+| 1.0.0   | Oct 12, 2025 | HealthFlow team  | Initial team onboarding guide    |
 
